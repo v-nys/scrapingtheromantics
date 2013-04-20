@@ -15,9 +15,11 @@ class JstorSpider(BaseSpider):
         Process the start pages into new requests.
         """
         return (FormRequest.from_response(response,
-                                          formdata={},
+                                          formname='advSearchForm',
+                                          formdata={'q0' : poet,
+                                                    'f0' : 'ti'},
                                           callback=self.after_search)
-                for poet in ['Byron', 'Keats', 'Shelley'])
+                for poet in ['Byron'])
 
     def after_search(self, response):
         r"""
