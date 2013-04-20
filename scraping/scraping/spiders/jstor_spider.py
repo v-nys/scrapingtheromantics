@@ -1,6 +1,6 @@
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
-from scraping.items import DmozItem
+from scraping.items import ArticleItem
 
 class JstorSpider(BaseSpider):
     name = "jstor"
