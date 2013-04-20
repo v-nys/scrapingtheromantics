@@ -1,3 +1,4 @@
+from scrapy.http import FormRequest
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scraping.items import ArticleItem
@@ -7,24 +8,21 @@ from scraping.items import ArticleItem
 class JstorSpider(BaseSpider):
     name = "jstor"
     allowed_domains = ["jstor.org"]
+    start_urls = ['http://www.jstor.org/action/showAdvancedSearch']
 
     def parse(self, response):
         r"""
-        Return items scraped (as `ArticleItem`s) and further
-        pages to be scraped (as `Request`s).
+        Process the start pages into new requests.
         """
-        filename = 'AdvancedSearch'
-        hxs = HtmlXPathSelector(response)
-        with open(filename, 'wb') as fh:
-            fh.write(response.body)
-
-    def start_requests(self)
-        r"""
-        Return an iterable containing the initial requests for
-        the JStor spider.
-
-        These requests are `FormRequest`s which use JStor's
-        advanced search functionality.
-        """
-        return (FormRequest('http://www.jstor.org/action/showAdvancedSearch')
+        return (FormRequest.from_response(response,
+                                          formdata={},
+                                          callback=self.after_search)
                 for poet in ['Byron', 'Keats', 'Shelley'])
+
+    def after_search(self, response):
+        r"""
+        Process search results by storing current page and generating
+        a new `Request` for the next result page.
+        """
+        with open('AdvancedSearch', 'wb') as fh:
+            fh.write(response.body)
