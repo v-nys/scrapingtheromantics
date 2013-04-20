@@ -1,3 +1,9 @@
 *.pyc
 *~
 *.swp
+
+bin
+include
+lib
+local
+man
