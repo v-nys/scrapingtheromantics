@@ -26,5 +26,12 @@ class JstorSpider(BaseSpider):
         Process search results by storing current page and generating
         a new `Request` for the next result page.
         """
-        with open('AdvancedSearch', 'wb') as fh:
-            fh.write(response.body)
+        hxs = HtmlXPathSelector(response)
+        page_entries = hxs.select('//div[@class="unit size4of5"]')
+        with open('output', 'wb') as fh:
+            fh.writelines(['# entries: {num}'.format(num=len(page_entries))])
+            for entry in page_entries:
+                # don't start searching from root!
+                title = entry.select('//div[@class="title"]/a/text()').extract()
+                fh.write(title)
+
