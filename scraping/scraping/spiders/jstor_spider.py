@@ -14,10 +14,12 @@ class JstorSpider(BaseSpider):
         r"""
         Process the start pages into new requests.
         """
+        # TODO restrict search to just articles
+        # will need to inspect browser request for this
         return (FormRequest.from_response(response,
                                           formname='advSearchForm',
                                           formdata={'q0' : poet,
-                                                    'f0' : 'ti'},
+                                                    'f0' : 'ti'}, # title
                                           callback=self.after_search)
                 for poet in ['Byron'])
 
@@ -29,9 +31,8 @@ class JstorSpider(BaseSpider):
         hxs = HtmlXPathSelector(response)
         page_entries = hxs.select('//div[@class="unit size4of5"]')
         with open('output', 'wb') as fh:
-            fh.writelines(['# entries: {num}'.format(num=len(page_entries))])
             for entry in page_entries:
-                # don't start searching from root!
-                title = entry.select('//div[@class="title"]/a/text()').extract()
-                fh.write(title)
+                title_xpath = 'div[@class="hd"]/div[@class="title"]/a/text()'
+                title = entry.select(title_xpath).extract()
+                fh.write(str(title) + '\n')
 
