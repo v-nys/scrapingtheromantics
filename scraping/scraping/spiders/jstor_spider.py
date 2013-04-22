@@ -13,13 +13,15 @@ class JstorSpider(BaseSpider):
     def parse(self, response):
         r"""
         Process the start pages into new requests.
+
+        This method will proceed to search for *articles* that have
+        a particular poet's name in their *title*.
         """
-        # TODO restrict search to just articles
-        # will need to inspect browser request for this
         return (FormRequest.from_response(response,
                                           formname='advSearchForm',
                                           formdata={'q0' : poet,
-                                                    'f0' : 'ti'}, # title
+                                                    'f0' : 'ti', # in title
+                                                    'ar' : 'on'}, # articles
                                           callback=self.after_search)
                 for poet in ['Byron'])
 
